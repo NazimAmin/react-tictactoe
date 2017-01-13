@@ -1,13 +1,10 @@
 import React, { Component } from "react";
 import "./App.css";
 
-function Square(props) {
-  return (
-    <button className="square" onClick={() => props.onClick()}>
-      {props.value}
-    </button>
-  );
-}
+const Square = props =>
+  <button className="square" onClick={() => props.onClick()}>
+    {props.value}
+  </button>;
 
 class Board extends Component {
   renderSquare(i) {
@@ -46,6 +43,7 @@ class Game extends Component {
       history: [ { squares: Array(9).fill(null) } ],
       stepNumber: 0
     };
+    this.handleClick = this.handleClick.bind(this);
   }
   handleClick(i) {
     var history = this.state.history.slice(0, this.state.stepNumber + 1);
@@ -54,9 +52,7 @@ class Game extends Component {
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
-
     squares[i] = this.state.xIsNext ? "X" : "O";
-
     this.setState({
       history: history.concat([ { squares: squares } ]),
       stepNumber: history.length,
@@ -73,7 +69,9 @@ class Game extends Component {
     let status;
     if (winner) {
       status = "Winner: " + winner;
-    } else {
+    } else if(current.squares.findIndex(x => x == null) < 0){
+      status = "Game Over."
+    }else{
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
     const moves = history.map((step, move) => {
@@ -87,7 +85,7 @@ class Game extends Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board squares={current.squares} onClick={i => this.handleClick(i)}>
+          <Board squares={current.squares} onClick={this.handleClick}>
           </Board>
         </div>
         <div className="game-info">
